@@ -1,3 +1,4 @@
+// Package handler contains the HTTP request handlers for the API.
 package handler
 
 import (
@@ -70,6 +71,7 @@ func (h *JobsHandler) List(ctx *gin.Context) {
 	})
 }
 
+// applyFilters returns jobs matching all provided non-empty filter strings.
 func applyFilters(jobs []domain.Job, title, company, source string) []domain.Job {
 	if title == "" && company == "" && source == "" {
 		return jobs

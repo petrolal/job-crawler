@@ -1,3 +1,4 @@
+// Package api wires together the HTTP router and all route handlers.
 package api
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// NewRouter creates and returns a configured Gin engine with all routes registered.
 func NewRouter(jobStore *store.JobStore) *gin.Engine {
 	r := gin.Default()
 

@@ -1,3 +1,4 @@
+// Package service contains the crawler orchestration logic.
 package service
 
 import (
@@ -10,12 +11,15 @@ import (
 	"jobs-crawler/internal/sources/lever"
 )
 
+// CrawlerService orchestrates concurrent job fetching from multiple sources.
 type CrawlerService struct {
 	Adzuna     adzuna.Client
 	Greenhouse []greenhouse.Client
 	Lever      []lever.Client
 }
 
+// Run fetches jobs from all configured sources concurrently and returns
+// only jobs located in Brazil or marked as remote.
 func (s CrawlerService) Run() ([]domain.Job, error) {
 	var all []domain.Job
 	var wg sync.WaitGroup

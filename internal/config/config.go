@@ -1,3 +1,4 @@
+// Package config loads application configuration from environment variables.
 package config
 
 import (
@@ -5,6 +6,7 @@ import (
 	"strconv"
 )
 
+// Config holds all application configuration values.
 type Config struct {
 	AdzunaAppID   string
 	AdzunaAPIKey  string
@@ -12,6 +14,8 @@ type Config struct {
 	AdzunaPerPage int
 }
 
+// Load reads configuration from environment variables and returns a Config.
+// Panics if required numeric variables are missing or malformed.
 func Load() Config {
 	pages, err := strconv.Atoi(os.Getenv("ADZUNA_PAGES"))
 	if err != nil {

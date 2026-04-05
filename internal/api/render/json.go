@@ -1,3 +1,4 @@
+// Package render provides HTTP response helpers for the API.
 package render
 
 import (
