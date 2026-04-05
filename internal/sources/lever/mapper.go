@@ -18,10 +18,11 @@ func MapToDomain(company string, r LeverJob) domain.Job {
 		Source:      "lever",
 
 		IsRemote: classifier.IsRemote(fullText),
-		IsHybridBrasilia: classifier.IsHybridBrasilia(
+		IsBrazil: classifier.IsBrazil(
 			r.Text,
 			r.Description,
 			r.Categories.Location,
 		),
+		IsLikelyQA: classifier.IsLikelyQA(r.Text, r.Description),
 	}
 }

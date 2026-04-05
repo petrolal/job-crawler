@@ -9,7 +9,7 @@ type Job struct {
 	URL         string
 	Source      string
 
-	IsRemote         bool
-	IsHybridBrasilia bool
-	IsLikelyQA       bool
+	IsRemote   bool
+	IsBrazil   bool
+	IsLikelyQA bool
 }

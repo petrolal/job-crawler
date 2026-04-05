@@ -21,7 +21,7 @@ func MapToDomain(company string, r GHJob) domain.Job {
 	}
 
 	job.IsRemote = classifier.IsRemote(text)
-	job.IsHybridBrasilia = classifier.IsHybridBrasilia(
+	job.IsBrazil = classifier.IsBrazil(
 		r.Title, r.Content, r.Location.Name)
 
 	job.IsLikelyQA = classifier.IsLikelyQA(

@@ -19,7 +19,7 @@ func MapToDomain(r AdzunaJob) domain.Job {
 	}
 
 	job.IsRemote = classifier.IsRemote(text)
-	job.IsHybridBrasilia = classifier.IsHybridBrasilia(
+	job.IsBrazil = classifier.IsBrazil(
 		r.Title, r.Description, r.Location.DisplayName)
 
 	job.IsLikelyQA = classifier.IsLikelyQA(

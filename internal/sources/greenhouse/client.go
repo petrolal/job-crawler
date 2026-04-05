@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type Client struct {
@@ -15,7 +16,8 @@ func (c Client) Fetch() ([]GHJob, error) {
 		"https://boards-api.greenhouse.io/v1/boards/%s/jobs",
 		c.Company,
 	)
-	resp, err := http.Get(url)
+	client := http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(url)
 	if err != nil {
 		return nil, err
 	}

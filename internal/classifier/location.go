@@ -22,22 +22,15 @@ func IsRemote(text string) bool {
 	return false
 }
 
-func IsHybridBrasilia(title, desc, location string) bool {
+func IsBrazil(title, desc, location string) bool {
 	t := strings.ToUpper(title + " " + desc + " " + location)
 
 	locationKeywords := []string{
+		"BRASIL",
+		"BRAZIL",
 		"BRASÍLIA",
-		"BRASILIA",
-		"DF",
 		"DISTRITO FEDERAL",
-	}
-
-	hybridKeywords := []string{
-		"HÍBRIDO",
-		"HYBRID",
-		"PRESENCIAL",
-		"ON-SITE",
-		"ESCRITÓRIO",
+		"DF",
 	}
 
 	hasLocation := false
@@ -47,14 +40,10 @@ func IsHybridBrasilia(title, desc, location string) bool {
 			break
 		}
 	}
+
 	if !hasLocation {
 		return false
 	}
 
-	for _, h := range hybridKeywords {
-		if strings.Contains(t, h) {
-			return true
-		}
-	}
-	return false
+	return true
 }
