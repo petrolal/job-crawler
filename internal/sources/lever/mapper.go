@@ -6,8 +6,7 @@ import (
 )
 
 func MapToDomain(company string, r LeverJob) domain.Job {
-	fullText := r.Text + " " + r.Description
-
+	text := r.Text + " " + r.Description
 	return domain.Job{
 		ID:          r.ID,
 		Title:       r.Text,
@@ -16,13 +15,7 @@ func MapToDomain(company string, r LeverJob) domain.Job {
 		Description: r.Description,
 		URL:         r.HostedURL,
 		Source:      "lever",
-
-		IsRemote: classifier.IsRemote(fullText),
-		IsBrazil: classifier.IsBrazil(
-			r.Text,
-			r.Description,
-			r.Categories.Location,
-		),
-		IsLikelyQA: classifier.IsLikelyQA(r.Text, r.Description),
+		IsRemote:    classifier.IsRemote(text),
+		IsBrazil:    classifier.IsBrazil(r.Text, r.Description, r.Categories.Location),
 	}
 }

@@ -9,8 +9,7 @@ import (
 
 func MapToDomain(company string, r GHJob) domain.Job {
 	text := r.Title + " " + r.Content
-
-	job := domain.Job{
+	return domain.Job{
 		ID:          company + "-" + strconv.Itoa(r.ID),
 		Title:       r.Title,
 		Company:     company,
@@ -18,14 +17,7 @@ func MapToDomain(company string, r GHJob) domain.Job {
 		Description: r.Content,
 		URL:         r.AbsoluteURL,
 		Source:      "greenhouse",
+		IsRemote:    classifier.IsRemote(text),
+		IsBrazil:    classifier.IsBrazil(r.Title, r.Content, r.Location.Name),
 	}
-
-	job.IsRemote = classifier.IsRemote(text)
-	job.IsBrazil = classifier.IsBrazil(
-		r.Title, r.Content, r.Location.Name)
-
-	job.IsLikelyQA = classifier.IsLikelyQA(
-		job.Title, job.Description)
-
-	return job
 }

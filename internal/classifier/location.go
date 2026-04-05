@@ -1,6 +1,11 @@
 package classifier
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
+
+var dfWord = regexp.MustCompile(`\bDF\b`)
 
 func IsRemote(text string) bool {
 	t := strings.ToUpper(text)
@@ -23,27 +28,18 @@ func IsRemote(text string) bool {
 }
 
 func IsBrazil(title, desc, location string) bool {
-	t := strings.ToUpper(title + " " + desc + " " + location)
+	loc := strings.ToUpper(location)
+	full := strings.ToUpper(title + " " + location)
 
-	locationKeywords := []string{
-		"BRASIL",
-		"BRAZIL",
-		"BRASÍLIA",
-		"DISTRITO FEDERAL",
-		"DF",
+	broadKeywords := []string{
+		"BRASIL", "BRAZIL", "BRASÍLIA", "BRASILIA", "DISTRITO FEDERAL",
+		"SÃO PAULO", "SAO PAULO", "RIO DE JANEIRO", "BELO HORIZONTE",
 	}
-
-	hasLocation := false
-	for _, l := range locationKeywords {
-		if strings.Contains(t, l) {
-			hasLocation = true
-			break
+	for _, k := range broadKeywords {
+		if strings.Contains(full, k) {
+			return true
 		}
 	}
 
-	if !hasLocation {
-		return false
-	}
-
-	return true
+	return dfWord.MatchString(loc)
 }

@@ -2,15 +2,15 @@ package api
 
 import (
 	"jobs-crawler/internal/api/handler"
-	"jobs-crawler/internal/domain"
+	"jobs-crawler/internal/store"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(jobs []domain.Job) *gin.Engine {
+func NewRouter(jobStore *store.JobStore) *gin.Engine {
 	r := gin.Default()
 
-	jobsHandler := &handler.JobsHandler{Jobs: jobs}
+	jobsHandler := &handler.JobsHandler{Store: jobStore}
 
 	v1 := r.Group("/v1")
 	{

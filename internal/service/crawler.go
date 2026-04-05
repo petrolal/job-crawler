@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"sync"
 
 	"jobs-crawler/internal/domain"
@@ -13,73 +14,48 @@ type CrawlerService struct {
 	Adzuna     adzuna.Client
 	Greenhouse []greenhouse.Client
 	Lever      []lever.Client
-	Jobs       []domain.Job
 }
 
 func (s CrawlerService) Run() ([]domain.Job, error) {
-	var jobs []domain.Job
+	var all []domain.Job
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 
 	wg.Add(3)
-
-	go func() {
-		defer wg.Done()
-		s.getAdzunaJobs(&jobs, &mu)
-	}()
-
-	go func() {
-		defer wg.Done()
-		s.getGreenhouseJobs(&jobs, &mu)
-	}()
-
-	go func() {
-		defer wg.Done()
-		s.getLeverJobs(&jobs, &mu)
-	}()
-
+	go func() { defer wg.Done(); s.fetchAdzuna(&all, &mu) }()
+	go func() { defer wg.Done(); s.fetchGreenhouse(&all, &mu) }()
+	go func() { defer wg.Done(); s.fetchLever(&all, &mu) }()
 	wg.Wait()
 
-	// =====================
-	// Filter QA
-	// =====================
-	var qaJobs []domain.Job
-	for _, j := range jobs {
-		if j.IsLikelyQA {
-			qaJobs = append(qaJobs, j)
+	var jobs []domain.Job
+	for _, j := range all {
+		if j.IsBrazil || j.IsRemote {
+			jobs = append(jobs, j)
 		}
 	}
-
-	return qaJobs, nil
+	return jobs, nil
 }
 
-// =====================
-// ADZUNA
-// =====================
-func (s *CrawlerService) getAdzunaJobs(jobs *[]domain.Job, mu *sync.Mutex) {
-	adzJobs, err := s.Adzuna.Fetch()
+func (s *CrawlerService) fetchAdzuna(jobs *[]domain.Job, mu *sync.Mutex) {
+	results, err := s.Adzuna.Fetch()
 	if err != nil {
 		return
 	}
-
-	for _, r := range adzJobs {
+	for _, r := range results {
 		mu.Lock()
 		*jobs = append(*jobs, adzuna.MapToDomain(r))
 		mu.Unlock()
 	}
 }
 
-// =====================
-// GREENHOUSE
-// =====================
-func (s *CrawlerService) getGreenhouseJobs(jobs *[]domain.Job, mu *sync.Mutex) {
+func (s *CrawlerService) fetchGreenhouse(jobs *[]domain.Job, mu *sync.Mutex) {
 	for _, gh := range s.Greenhouse {
-		ghJobs, err := gh.Fetch()
+		results, err := gh.Fetch()
 		if err != nil {
+			log.Printf("greenhouse [%s]: %v", gh.Company, err)
 			continue
 		}
-
-		for _, r := range ghJobs {
+		for _, r := range results {
 			mu.Lock()
 			*jobs = append(*jobs, greenhouse.MapToDomain(gh.Company, r))
 			mu.Unlock()
@@ -87,18 +63,14 @@ func (s *CrawlerService) getGreenhouseJobs(jobs *[]domain.Job, mu *sync.Mutex) {
 	}
 }
 
-// ===================
-// Lever
-// ===================
-
-func (s *CrawlerService) getLeverJobs(jobs *[]domain.Job, mu *sync.Mutex) {
+func (s *CrawlerService) fetchLever(jobs *[]domain.Job, mu *sync.Mutex) {
 	for _, lv := range s.Lever {
-		lvJobs, err := lv.Fetch()
+		results, err := lv.Fetch()
 		if err != nil {
+			log.Printf("lever [%s]: %v", lv.Company, err)
 			continue
 		}
-
-		for _, r := range lvJobs {
+		for _, r := range results {
 			mu.Lock()
 			*jobs = append(*jobs, lever.MapToDomain(lv.Company, r))
 			mu.Unlock()

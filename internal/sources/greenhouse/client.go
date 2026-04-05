@@ -13,7 +13,7 @@ type Client struct {
 
 func (c Client) Fetch() ([]GHJob, error) {
 	url := fmt.Sprintf(
-		"https://boards-api.greenhouse.io/v1/boards/%s/jobs",
+		"https://boards-api.greenhouse.io/v1/boards/%s/jobs?content=true",
 		c.Company,
 	)
 	client := http.Client{Timeout: 10 * time.Second}

@@ -7,8 +7,7 @@ import (
 
 func MapToDomain(r AdzunaJob) domain.Job {
 	text := r.Title + " " + r.Description
-
-	job := domain.Job{
+	return domain.Job{
 		ID:          r.ID,
 		Title:       r.Title,
 		Company:     r.Company.DisplayName,
@@ -16,14 +15,7 @@ func MapToDomain(r AdzunaJob) domain.Job {
 		Description: r.Description,
 		URL:         r.RedirectURL,
 		Source:      "adzuna",
+		IsRemote:    classifier.IsRemote(text),
+		IsBrazil:    classifier.IsBrazil(r.Title, r.Description, r.Location.DisplayName),
 	}
-
-	job.IsRemote = classifier.IsRemote(text)
-	job.IsBrazil = classifier.IsBrazil(
-		r.Title, r.Description, r.Location.DisplayName)
-
-	job.IsLikelyQA = classifier.IsLikelyQA(
-		job.Title, job.Description)
-
-	return job
 }
