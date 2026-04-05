@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 
+	"jobs-crawler/internal/api"
 	"jobs-crawler/internal/config"
 	"jobs-crawler/internal/service"
 	"jobs-crawler/internal/sources/adzuna"
 	"jobs-crawler/internal/sources/greenhouse"
 	"jobs-crawler/internal/sources/lever"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -34,15 +34,13 @@ func main() {
 		},
 	}
 
-	jobs, _ := crawler.Run()
+	jobs, err := crawler.Run()
+	if err != nil {
+		log.Printf("crawler error: %v", err)
+	}
 
 	fmt.Printf("\n✅ Total QA jobs: %d\n", len(jobs))
 
-	g := gin.Default()
-
-	g.GET("/jobs", func(ctx *gin.Context) {
-		ctx.JSON(200, jobs)
-	})
-
-	g.Run(":8080")
+	r := api.NewRouter(jobs)
+	r.Run(":8080")
 }
