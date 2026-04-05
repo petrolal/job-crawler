@@ -5,7 +5,6 @@ import (
 
 	"jobs-crawler/internal/classifier"
 	"jobs-crawler/internal/domain"
-	"jobs-crawler/internal/scoring"
 )
 
 func MapToDomain(company string, r GHJob) domain.Job {
@@ -27,10 +26,6 @@ func MapToDomain(company string, r GHJob) domain.Job {
 
 	job.IsLikelyQA = classifier.IsLikelyQA(
 		job.Title, job.Description)
-
-	job.Score = scoring.Score(
-		job.Title, job.Description,
-		job.IsRemote, job.IsHybridBrasilia)
 
 	return job
 }

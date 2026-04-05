@@ -12,6 +12,4 @@ type Job struct {
 	IsRemote         bool
 	IsHybridBrasilia bool
 	IsLikelyQA       bool
-
-	Score int
 }

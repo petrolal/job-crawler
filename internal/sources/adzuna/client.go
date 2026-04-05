@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -35,12 +36,10 @@ func (c Client) Fetch() ([]AdzunaJob, error) {
 
 		// ✅ Query params (como você fazia antes)
 		q := u.Query()
+		q.Set("what", "qa")
 		q.Set("app_id", c.AppID)
 		q.Set("app_key", c.APIKey)
-		q.Set("results_per_page", fmt.Sprintf("%d", c.ResultsPage))
-
-		// ✅ PONTO CRÍTICO: funciona no BR
-		q.Set("what", "qa")
+		q.Set("results_per_page", strconv.Itoa(c.ResultsPage))
 
 		u.RawQuery = q.Encode()
 
@@ -65,6 +64,7 @@ func (c Client) Fetch() ([]AdzunaJob, error) {
 		resp.Body.Close()
 
 		if len(response.Results) == 0 {
+			fmt.Println("no Results on Azuna")
 			break // ✅ sem mais resultados
 		}
 

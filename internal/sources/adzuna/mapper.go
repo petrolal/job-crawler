@@ -3,7 +3,6 @@ package adzuna
 import (
 	"jobs-crawler/internal/classifier"
 	"jobs-crawler/internal/domain"
-	"jobs-crawler/internal/scoring"
 )
 
 func MapToDomain(r AdzunaJob) domain.Job {
@@ -25,10 +24,6 @@ func MapToDomain(r AdzunaJob) domain.Job {
 
 	job.IsLikelyQA = classifier.IsLikelyQA(
 		job.Title, job.Description)
-
-	job.Score = scoring.Score(
-		job.Title, job.Description,
-		job.IsRemote, job.IsHybridBrasilia)
 
 	return job
 }

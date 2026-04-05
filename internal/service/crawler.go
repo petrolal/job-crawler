@@ -1,18 +1,16 @@
 package service
 
 import (
-	"fmt"
-	"sort"
-
-	"jobs-crawler/internal/dedup"
 	"jobs-crawler/internal/domain"
 	"jobs-crawler/internal/sources/adzuna"
 	"jobs-crawler/internal/sources/greenhouse"
+	"jobs-crawler/internal/sources/lever"
 )
 
 type CrawlerService struct {
 	Adzuna     adzuna.Client
 	Greenhouse []greenhouse.Client
+	Lever      []lever.Client
 }
 
 func (s CrawlerService) Run() ([]domain.Job, error) {
@@ -29,7 +27,6 @@ func (s CrawlerService) Run() ([]domain.Job, error) {
 	for _, r := range adzJobs {
 		jobs = append(jobs, adzuna.MapToDomain(r))
 	}
-	fmt.Println("📦 Adzuna:", len(adzJobs))
 
 	// =====================
 	// GREENHOUSE
@@ -44,15 +41,21 @@ func (s CrawlerService) Run() ([]domain.Job, error) {
 		}
 	}
 
-	fmt.Println("📦 Total bruto:", len(jobs))
+	// ===================
+	// Lever
+	// ===================
+	for _, lv := range s.Lever {
+		lvJobs, err := lv.Fetch()
+		if err != nil {
+			continue
+		}
+		for _, r := range lvJobs {
+			jobs = append(jobs, lever.MapToDomain(lv.Company, r))
+		}
+	}
 
 	// =====================
-	// DEDUPLICAÇÃO
-	// =====================
-	jobs = dedup.Deduplicate(jobs)
-
-	// =====================
-	// FILTRO QA (CORRETO)
+	// Filter QA
 	// =====================
 	var qaJobs []domain.Job
 	for _, j := range jobs {
@@ -61,13 +64,5 @@ func (s CrawlerService) Run() ([]domain.Job, error) {
 		}
 	}
 
-	// =====================
-	// ORDENA POR SCORE
-	// =====================
-	sort.Slice(qaJobs, func(i, j int) bool {
-		return qaJobs[i].Score > qaJobs[j].Score
-	})
-
-	fmt.Println("✅ QA jobs finais:", len(qaJobs))
 	return qaJobs, nil
 }
